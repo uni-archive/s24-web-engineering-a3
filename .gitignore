@@ -1,0 +1,10 @@
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+node_modules/
+report.html
+report.json
+server/orders/order-*.json
+!server/orders/order-0000.json

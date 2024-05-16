@@ -1,0 +1,27 @@
+[
+  {
+    "id": "mint",
+    "label": "Mint",
+    "color": "#F5FFFA"
+  },
+  {
+    "id": "periwinkle",
+    "label": "Periwinkle",
+    "color": "#CCCCFF"
+  },
+  {
+    "id": "cerulean",
+    "label": "Cerulean",
+    "color": "#407899"
+  },
+  {
+    "id": "burgundy",
+    "label": "Burgundy",
+    "color": "#800020"
+  },
+  {
+    "id": "coal",
+    "label": "Coal",
+    "color": "#495D6A"
+  }
+]

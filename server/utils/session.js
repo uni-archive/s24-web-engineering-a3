@@ -14,8 +14,25 @@ const sessions = new Map();
  * @return {string} The generated session id
  */
 function create() {
-   /** TODO: implement session creation */
-   return null;
+    const sessionId = Math.random().toString("16");
+    sessions.set(sessionId, {});
+   return sessionId;
+}
+
+function setData(id, data) {
+    sessions.set(id, {
+        cart: sessions.get(id).cart,
+        ...data
+    });
+}
+
+function getByPaymentSessionId(paymentSessionId) {
+    for (const [key, value] of sessions.entries()) {
+        if (value.paymentIntent.id === paymentSessionId) {
+            return key;
+        }
+    }
+    return null;
 }
 
 /**
@@ -29,4 +46,4 @@ function load(id) {
 
 /** TODO: Add other methods to operate on session */
 
-module.exports = {create, load}
+module.exports = {create, load, setData, getByPaymentSessionId}

@@ -13,8 +13,13 @@ const path = require('path');
 const MET_BASE_URL = 'https://collectionapi.metmuseum.org/public/collection/v1';
 const highlights = JSON.parse(fs.readFileSync(path.join(__dirname, '../resources/highlights.json'))).highlights;
 
+const artworkCache = {};
+const searchCache = {};
+
 async function getArtwork(id) {
-  /** TODO: Cache results and transform return object to match the endpoint description */
+    if (artworkCache[id])
+      return artworkCache[id];
+
     const res = await fetch(MET_BASE_URL + '/objects/' + id);
     if (!res.ok) {
       return null;
@@ -23,17 +28,44 @@ async function getArtwork(id) {
     if (!obj || !obj.objectID) {
       return null;
     }
-    
-    return obj;
+
+    const artwork = {
+      artworkId: obj.objectID,
+      title: obj.title,
+      artist: obj.artistDisplayName,
+      date: obj.objectDate,
+      image: obj.primaryImageSmall
+    };
+
+    artworkCache[id] = artwork;
+
+    return artwork;
+}
+
+async function search(q) {
+    if (searchCache[q])
+      return searchCache[q];
+
+    const res = await fetch(MET_BASE_URL + '/search?hasImages=true&q=' + q);
+    if (!res.ok) {
+      return null;
+    }
+    const obj = await res.json();
+    obj.url = MET_BASE_URL + '/search?q=' + q;
+    if (!obj || !obj.objectIDs) {
+      return [];
+    }
+
+    searchCache[q] = obj.objectIDs;
+
+    return obj.objectIDs;
 }
 
 routes.get('/', async (req, res) => {
   if (req.query.q == null) {
-    // TODO: return highlights
-    res.send([]);
+    res.send(await Promise.all(highlights.map(id => getArtwork(id))));
   } else {
-    // TODO: search for artworks
-    res.sendStatus(501);
+    res.send(await Promise.all((await search(req.query.q)).map(id => getArtwork(id))));
   }
 });
 
